@@ -41,7 +41,7 @@ import { HorizontalSeparator } from './SeparatorWithText'
       return (
       <div className='pt-24 pb-16'>
                 <div id="content" className='mx-8 min-h-fit bg-zinc-800 h-5/6 p-2 flex '>
-                  <div id="left" className='w-1/2 h-full p-2'>
+                  <div id="left" className='lg:w-1/2 lg:h-full p-2'>
                     <div className='flex flex-wrap'>
                       <div className='w-2/3'>
                         <h1 className='text-white text-6xl mb-4'>{product.product_name}</h1>
@@ -80,7 +80,7 @@ import { HorizontalSeparator } from './SeparatorWithText'
                       )
                     } 
                   </div>
-                  <div id="right" className='w-1/2 h-[100%] relative h-[80vh] bg-cover bg-center' style={{backgroundImage: `url(${require(`../images/product_images/${productID}_0.jpg`)})`}} />                     </div>
+                  <div id="right" className='relative sm:h-[50vh] sm:w-[100vw]sm:w lg:w-1/2 lg:h-[80vh] bg-cover bg-center' style={{backgroundImage: `url(${require(`../images/product_images/${productID}_0.jpg`)})`}} />                     </div>
       </div>
       )
     } else {return null;}

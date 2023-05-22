@@ -32,7 +32,7 @@ const NavBarDesktop = () => {
                     <input type='text' className='w-full h-full mx-2 focus:outline-none'></input>
                 </div>
                 <div className='float-right flex w-32 justify-around'>
-                <Profile />
+                <Profile user=""/>
                 <ShoppingCart/>
                 </div>
                 

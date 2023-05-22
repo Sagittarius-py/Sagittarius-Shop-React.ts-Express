@@ -1,5 +1,7 @@
 import React, { useRef, useLayoutEffect, useState } from "react";
 
+
+
 const convertPrice = (price:any) => {
     const priceSplitted = price?.toString().split(".");
     if(priceSplitted?.length > 1){
@@ -28,6 +30,7 @@ const ProductCard = (props:any) => {
             <p className='mx-2 text-sm'>{desc? desc.slice(0,100) :null}{desc ? desc.length > 100 ? "..." : null : null}</p>
             <h3 className='absolute text-lg font-semibold left-4 bottom-2'>{price}zł</h3>
             <div className='w-0 group-hover/item:w-auto absolute right-2 bottom-2 overflow-hidden duration-100'>
+
                 <a className=' bg-orange-500 p-1 rounded-lg  hover:text-white duration-100' href={`/products/${id}` }>Check it out</a>
             </div>
         </div>
