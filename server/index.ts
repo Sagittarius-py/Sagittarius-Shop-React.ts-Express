@@ -1,38 +1,58 @@
-const express = require("express");
-const mongoose = require("mongoose");
-require("dotenv").config();
+const express =  require("express");
+import mongoose, { Schema, Document } from "mongoose";
+const bodyParser = require("body-parser");
+const bcrypt = require("bcrypt");
+const cors = require("cors");
+const multer = require ("multer");
+const fs = require("fs")
 
-var __importDefault:any =
-  (this && this.__importDefault) ||
-  function (mod:any) {
-    return mod && mod.__esModule ? mod : { default: mod };
-  };
-Object.defineProperty(exports, "__esModule", { value: true });
-const dotenv_1 = __importDefault(require("dotenv"));
-const express_1 = __importDefault(require("express"));
-const cors_1 = __importDefault(require("cors"));
-dotenv_1.default.config();
 const app = express();
-
-app.use(express_1.default.json());
-app.use((0, cors_1.default)());
+app.use(bodyParser.json());
+app.use(cors());
+app.use(express.static("public"));
 
 mongoose
   .connect("mongodb+srv://admin:admin@cluster0.6hwms.mongodb.net/products")
-  .then(console.log("connected!"));
+  .then(() => {
+    console.log("connected!");
+  });
 
 const db = mongoose.connection;
 db.once("open", function () {
   console.log("Connected to MongoDB successfully!");
 });
+db.on("error", function (err) {
+  console.log(err);
+});
 
+interface IProductReview {
+  product_rating: number;
+  product_review: string;
+}
 
-const productSchema = new mongoose.Schema({
-  _id: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
+interface IProduct extends Document {
+  _id: mongoose.Schema.Types.ObjectId;
+  product_name: string;
+  product_category: string;
+  product_price: number;
+  product_stock: number;
+  product_reviews: IProductReview[];
+  product_description: string;
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public");
   },
-  product_name: {
+  filename: (req, file, cb) => {
+    cb(null, file.fieldname + "-" + Date.now());
+  },
+});
+
+const upload = multer({ storage: storage });
+
+const productSchema = new Schema<IProduct>({
+product_name: {
     type: String,
     required: true,
   },
@@ -48,7 +68,7 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  product_rewiews: [
+  product_reviews: [
     {
       product_rating: {
         type: Number,
@@ -65,32 +85,108 @@ const productSchema = new mongoose.Schema({
     required: true,
   },
 });
-const product = mongoose.model("Product", productSchema);
+const product = mongoose.model<IProduct>("Product", productSchema);
 
-app.get("/api/get", async (req:any, res:any) => {
+app.get("/api/get", async (req, res) => {
   try {
-    var result = await product.find();
+    const result = await product.find();
+    res.send(result);
   } catch (err) {
     console.log(err);
-  }
-
-  if (result) {
-    res.send(result);
+    res.status(500).send("Internal server error");
   }
 });
 
-app.get("/api/getOneProduct/:productID", async (req:any, res:any) => {
+app.get("/api/getOneProduct/:productID", async (req, res) => {
   const productID = req.params.productID;
   try {
-    var result = await product.find({ _id: productID });
+    const result = await product.find({ _id: productID });
+    res.send(result);
   } catch (err) {
     console.log(err);
-  }
-
-  if (result) {
-    res.send(result);
+    res.status(500).send("Internal server error");
   }
 });
+
+
+
+const User = mongoose.model<any>("User", {
+  username: String,
+  password: String,
+  shopping_bag: Array,
+  address: String,
+});
+
+// Middleware
+app.use(bodyParser.json());
+
+// Login Route
+app.post("/api/login", async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    // Find the user in the database
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.send({ error: "User not found" });
+    }
+
+    // Compare the password
+    const isPasswordMatch = password == user.password;
+    if (!isPasswordMatch) {
+      return res.status(401).json({ error: "Invalid password" });
+    } else {
+      // Login successful
+      user.password = "";
+      res.status(200).json({ message: "Login successful", user });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+interface IBanner extends Document {
+  banner_title: string;
+  banner_href: string;
+  banner_desc: string;
+}
+
+const BannerSchema = new Schema<IBanner>({
+  banner_title: String,
+  banner_href: String,
+  banner_desc: String,
+});
+
+const banner = mongoose.model<IBanner>("Banner", BannerSchema);
+
+app.get("/api/getBanners", async (req, res) => {
+  try {
+    const result = await banner.find();
+    res.send(result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Internal server error");
+  }
+});
+
+
+// !Create Product ======================================
+app.post("/api/addProduct", upload.single("product_photos"), (req:any, res:any) => {
+    var{ product_name, product_quantity, product_price, product_category, product_description} = req.body;
+    var newProduct = {
+      "product_name": product_name, 
+      "product_category": product_category,
+      "product_price": product_price,
+      "product_stock": product_quantity,
+      "product_rewiews": [],
+      "product_description":product_description
+    }
+    product.create(newProduct)
+    .then((insertedProduct) =>  {
+      fs.rename( `./public/${req.file.filename}`, `./public/${insertedProduct._id}_0.jpg`, ()=>{} );
+    })
+  }
+);
 
 const port = process.env.PORT || 8000;
 app.listen(port, () => {

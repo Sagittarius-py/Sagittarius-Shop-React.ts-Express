@@ -1,14 +1,15 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
-
 import {  useState } from 'react';
 
-const Carousel = (props: { bannerList: any; }) => {
-  
 
+
+const Carousel = (props: { bannerList: any; }) => {
   let bannerList = props.bannerList;
   console.log("banner list: ",  bannerList)
 
   let [activeBanner, setActiveBanner] = useState(0);
+
+
 
   const changeBannerHandle = (num: number) => {
     if(activeBanner + num >= 0 && activeBanner + num < bannerList.length ){

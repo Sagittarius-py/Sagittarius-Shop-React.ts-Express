@@ -80,7 +80,7 @@ import { HorizontalSeparator } from './SeparatorWithText'
                       )
                     } 
                   </div>
-                  <div id="right" className='relative sm:h-[50vh] sm:w-[100vw]sm:w lg:w-1/2 lg:h-[80vh] bg-cover bg-center' style={{backgroundImage: `url(${require(`../images/product_images/${productID}_0.jpg`)})`}} />                     </div>
+                  <div id="right" className='relative sm:h-[50vh] sm:w-[100vw]sm:w lg:w-1/2 lg:h-[80vh] bg-cover bg-center' style={{backgroundImage: `url(http://localhost:8000/${productID}_0.jpg)`}} />                     </div>
       </div>
       )
     } else {return null;}

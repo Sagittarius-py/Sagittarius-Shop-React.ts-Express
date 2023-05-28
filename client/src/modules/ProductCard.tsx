@@ -20,7 +20,7 @@ const ProductCard = (props:any) => {
 
     let shadow = "shadow-[0_0px_30px_0px_rgb(0,0,0,0.25)]"
 
-    let style = { backgroundImage: `url(${require(`../images/product_images/${id}_0.jpg`)})` }
+    let style = { backgroundImage: `url(http://localhost:8000/${id}_0.jpg)` }
 
     return(
         <div className={`z-40 m-4 relative duration-100 ${shadow} hover:shadow-orange-400/50 bg-zinc-50 h-[26rem] w-80 max-w-[600px] rounded-xl group/item`} >

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import Axios from "axios";
+
 
 const AddProductPage: React.FC = () => {
   const [productName, setProductName] = useState('');
@@ -11,7 +13,21 @@ const AddProductPage: React.FC = () => {
   const handleProductSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Handle form submission logic here
+    const data = new FormData();
+    data.append("product_name", productName);
+    data.append("product_quantity", quantity);
+    if(imageFile)
+    {
+    data.append("product_photos", imageFile);
+    }
+    data.append("product_price", price);
+    data.append("product_category", category);
+    data.append("product_description", description);
+    Axios.post("http://localhost:8000/api/addProduct", data).then((res) => {
+          console.log(res);
+        });
+
+
     // e.g., send data to the server or update the state
     console.log({
       productName,
@@ -23,12 +39,12 @@ const AddProductPage: React.FC = () => {
     });
 
     // Clear form fields
-    setProductName('');
-    setQuantity('');
-    setImageFile(null);
-    setPrice('');
-    setCategory('');
-    setDescription('');
+    // setProductName('');
+    // setQuantity('');
+    // setImageFile(null);
+    // setPrice('');
+    // setCategory('');
+    // setDescription('');
   };
 
   return (
@@ -71,6 +87,7 @@ const AddProductPage: React.FC = () => {
           <input
             type="file"
             id="imageFile"
+
             onChange={(e) => setImageFile(e.target.files ? e.target.files[0] : null)}
             className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
             required
