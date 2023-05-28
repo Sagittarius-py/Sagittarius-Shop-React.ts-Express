@@ -1,5 +1,5 @@
 import ShoppingCart from './ShoppingCart';
-import Profile from './Profile';
+import Profile from './UserPanel';
 
 import React, { useState, useEffect } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
@@ -32,7 +32,7 @@ const NavBarDesktop = () => {
                     <input type='text' className='w-full h-full mx-2 focus:outline-none'></input>
                 </div>
                 <div className='float-right flex w-32 justify-around'>
-                <Profile user=""/>
+                <Profile/>
                 <ShoppingCart/>
                 </div>
                 

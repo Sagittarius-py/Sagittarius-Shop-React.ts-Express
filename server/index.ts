@@ -5,11 +5,22 @@ const bcrypt = require("bcrypt");
 const cors = require("cors");
 const multer = require ("multer");
 const fs = require("fs")
+const session = require('express-session');
 
 const app = express();
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
 app.use(express.static("public"));
+app.use(session({
+  secret: 'my-secret-key', // a secret key for session signature
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 24 * 60 * 60 * 1000, // session timeout (in milliseconds)
+    sameSite: true,
+    secure: false // set it to true if your app uses HTTPS
+  }
+}));
 
 mongoose
   .connect("mongodb+srv://admin:admin@cluster0.6hwms.mongodb.net/products")
@@ -137,12 +148,27 @@ app.post("/api/login", async (req, res) => {
     } else {
       // Login successful
       user.password = "";
-      res.status(200).json({ message: "Login successful", user });
+      req.session.user = { id: user._id, email: email};
+      res.cookie('userId', user._id); 
+      res.cookie('email', email);
+      res.status(200).send('Login successful');
     }
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
+});
+
+app.get("/api/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error destroying session:', err)
+    }
+    res.clearCookie('connect.sid')
+    res.clearCookie('email')
+    res.clearCookie('userId')
+    res.status(200).send("Logged out successfully!")
+  });
 });
 
 interface IBanner extends Document {
