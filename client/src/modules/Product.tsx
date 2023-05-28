@@ -1,12 +1,14 @@
   import { useEffect, useState } from 'react'
   import Axios from "axios";
   import { useParams } from "react-router-dom";
-
+  import { useCookies } from 'react-cookie';
 
 import RewiewBox from './RewiewBox'
 import { HorizontalSeparator } from './SeparatorWithText'
 
   export default function Product() {
+    const [cookies, setCookie, removeCookie] = useCookies([`userId`]);
+
     let  { productID }:any = useParams();
     const [product, setProduct] = useState<any>({})
 
@@ -28,6 +30,11 @@ import { HorizontalSeparator } from './SeparatorWithText'
     const randomData = (min: number, max:number) => {
       return Math.floor(Math.random() * (max - min) + min)
     }
+    const AddToBagHandle = () => {
+      const userId = cookies.userId
+      let data = {productID,  userId}
+      Axios.post(`http://localhost:8000/api/AddProductToBag`, data)
+    }
   
     if(product)
     {
@@ -45,7 +52,9 @@ import { HorizontalSeparator } from './SeparatorWithText'
                       <div className='w-1/4'>
                         <h1 className='text-white text-4xl lg:text-6xl float-right'>{convertPrice(product.product_price)}zł</h1>
                         <HorizontalSeparator className="bg-blue-500"/>
-                        <button className='text-blue-500 p-2 rounded-lg hover:bg-blue-500 hover:text-white float-right border-2 border-blue-500 duration-100'>Add to bag</button>
+                        <button onClick={() => AddToBagHandle()} className='text-blue-500 p-2 rounded-lg hover:bg-blue-500 hover:text-white float-right border-2 border-blue-500 duration-100'>
+                          Add to bag
+                        </button>
                       </div>
                     </div>
                     <HorizontalSeparator className="bg-orange-500" text="Features"/>

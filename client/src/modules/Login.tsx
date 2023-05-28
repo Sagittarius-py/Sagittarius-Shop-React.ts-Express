@@ -6,12 +6,12 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const handleSubmit = async (e: any) => {
         e.preventDefault();
-        const response = await fetch('http://localhost:8000/api/login', {
-          method: 'POST',
+        const response = await fetch('http://localhost:8000/api/login', { 
+          method: 'POST', 
           headers: {
             'Content-Type': 'application/json'
           },
-          credentials: 'include',
+          credentials: 'include',   
           body: JSON.stringify({ email, password })
         });
         if (response.ok) {

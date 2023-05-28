@@ -1,9 +1,20 @@
 import { ShoppingBagIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import {  useState } from 'react';
+import {  useState, useEffect } from 'react';
 import CartProduct from "./CartProduct";
+import Axios from 'axios';
+import { useCookies } from 'react-cookie';
 
 const ShoppingCart = () => {
+    const [cookies] = useCookies([`userId`]);
     let [cartOpened, setCartOpened] = useState(false);
+    let [cartItems, setCartItems] = useState<any>()
+
+    useEffect(() => {
+        if(cookies.userId){
+      Axios.get(`http://localhost:8000/api/getShoppingBag/${cookies.userId}`).then((data) => {setCartItems(data.data); console.log(cartItems)})
+      }
+    }, [])
+    
 
     return (
         <>
@@ -11,8 +22,8 @@ const ShoppingCart = () => {
             <div className='bg-slate-100 w-10 h-10 rounded-full z-50 flex items-center justify-center' onClick={() => setCartOpened(!cartOpened)}>
                {cartOpened ?  <XMarkIcon className=" w-6" /> : <ShoppingBagIcon className=" w-6" />   } 
             </div>
-            <div className={` fixed bottom-0 right-0 z-40 h-screen bg-zinc-950 ${cartOpened ? "w-96" :" w-0"} duration-200 shadow-xl shadow-orange-500/30 flex justify-center pt-20`}>
-                {cartOpened ? <CartProduct/> : null}
+            <div className={` fixed flex flex-col items-center bottom-0 right-0 z-40 h-screen bg-zinc-950 ${cartOpened ? "w-96" :" w-0"} duration-200 shadow-xl shadow-orange-500/30 pt-20`}>
+                {cartOpened ? cartItems?.map((item:any) => { return <CartProduct item={item}/>}) : null}
                 
                 <a className="absolute bottom-4 left-4 bg-orange-500 px-4 py-2 rounded-sm hover:scale-110 duration-75" href="/summary">Proceed</a>
             </div>

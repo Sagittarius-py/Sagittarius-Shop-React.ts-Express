@@ -5,7 +5,7 @@ const RewiewBox = (props: any) => {
     let array: any[] = []
 
     for(let i = 0; i < rating; i++){
-        array.push(<div className="w-3 h-3 rounded-full bg-orange-500 mr-1"></div>)
+        array.push(<div key={i} className="w-3 h-3 rounded-full bg-orange-500 mr-1"></div>)
     }
 
     return (

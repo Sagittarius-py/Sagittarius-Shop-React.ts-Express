@@ -22,7 +22,6 @@ const UserPanel = () => {
               <Login />
               : 
               <Profile />
-
               }
                 
 

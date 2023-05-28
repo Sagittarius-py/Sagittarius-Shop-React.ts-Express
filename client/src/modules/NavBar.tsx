@@ -3,9 +3,12 @@ import Profile from './UserPanel';
 
 import React, { useState, useEffect } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
+import { useCookies } from 'react-cookie';
 
 
 const NavBarDesktop = () => { 
+
+    const [cookies, setCookie, removeCookie] = useCookies([`userId`]);
     const [isScrolled, setIsScrolled] = useState<boolean>(false);
 
     let navOffset:number = 75;
@@ -33,7 +36,8 @@ const NavBarDesktop = () => {
                 </div>
                 <div className='float-right flex w-32 justify-around'>
                 <Profile/>
-                <ShoppingCart/>
+                {cookies.userId ? <ShoppingCart/> : null}
+                
                 </div>
                 
             </header>

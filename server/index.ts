@@ -98,6 +98,13 @@ product_name: {
 });
 const product = mongoose.model<IProduct>("Product", productSchema);
 
+const User = mongoose.model<any>("User", {
+  username: String,
+  password: String,
+  shopping_bag: Array,
+  address: String,
+});
+
 app.get("/api/get", async (req, res) => {
   try {
     const result = await product.find();
@@ -120,33 +127,49 @@ app.get("/api/getOneProduct/:productID", async (req, res) => {
 });
 
 
+app.post("/api/AddProductToBag", async (req, res) => {
+  console.log(req.body)
+  const {productID, userId} = req.body;
+  const user = await User.findOne({ _id: userId }).then((document) => {
+    if (document) {
+      document.shopping_bag.push([productID, 1]);
 
-const User = mongoose.model<any>("User", {
-  username: String,
-  password: String,
-  shopping_bag: Array,
-  address: String,
+      // Save the changes
+      return document.save();
+    } else {
+      throw new Error('Document not found');
+    }
+  })
+  .then((updatedDocument) => {
+    console.log('Document updated:', updatedDocument);
+  })
+  .catch((error) => {
+    console.error('Error updating document:', error);
+  });
 });
 
-// Middleware
-app.use(bodyParser.json());
+app.get("/api/getShoppingBag/:userId", async (req: any, res: any) => {
+  const userId = req.params.userId
+  const user = await User.findOne({ _id: userId })
+  if(user.shopping_bag){
+    res.status(200).send(user.shopping_bag)}
+  }
+)
 
-// Login Route
-app.post("/api/login", async (req, res) => {
+
+
+app.post("/api/login", async (req: any, res: any) => {
   const { email, password } = req.body;
   try {
-    // Find the user in the database
     const user = await User.findOne({ email });
     if (!user) {
       return res.send({ error: "User not found" });
     }
 
-    // Compare the password
     const isPasswordMatch = password == user.password;
     if (!isPasswordMatch) {
       return res.status(401).json({ error: "Invalid password" });
     } else {
-      // Login successful
       user.password = "";
       req.session.user = { id: user._id, email: email};
       res.cookie('userId', user._id); 
