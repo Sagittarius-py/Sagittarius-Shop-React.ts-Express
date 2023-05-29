@@ -36,6 +36,21 @@ db.on("error", function (err) {
   console.log(err);
 });
 
+
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public");
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.fieldname + "-" + Date.now());
+  },
+});
+
+const upload = multer({ storage: storage });
+
+// ! Products-------------------------------------
+
 interface IProductReview {
   product_rating: number;
   product_review: string;
@@ -50,17 +65,6 @@ interface IProduct extends Document {
   product_reviews: IProductReview[];
   product_description: string;
 }
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "public");
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.fieldname + "-" + Date.now());
-  },
-});
-
-const upload = multer({ storage: storage });
 
 const productSchema = new Schema<IProduct>({
 product_name: {
@@ -98,12 +102,6 @@ product_name: {
 });
 const product = mongoose.model<IProduct>("Product", productSchema);
 
-const User = mongoose.model<any>("User", {
-  username: String,
-  password: String,
-  shopping_bag: Array,
-  address: String,
-});
 
 app.get("/api/get", async (req, res) => {
   try {
@@ -158,6 +156,16 @@ app.get("/api/getShoppingBag/:userId", async (req: any, res: any) => {
 
 
 
+// ! Users -----------------------------------------------------
+
+const User = mongoose.model<any>("User", {
+  email: String,
+  password: String,
+  shopping_bag: Array,
+  address: String,
+});
+
+
 app.post("/api/login", async (req: any, res: any) => {
   const { email, password } = req.body;
   try {
@@ -182,6 +190,26 @@ app.post("/api/login", async (req: any, res: any) => {
   }
 });
 
+app.post("/api/register", async (req: any, res: any) => {
+  const { email, password, address } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if(!user){
+      var newUser = {
+        "password": password, 
+        "shopping_bag": [],
+        "address": address,
+        "email": email
+      }
+      User.create(newUser)
+      res.status(200).send("User created!")
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.get("/api/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) {
@@ -193,6 +221,47 @@ app.get("/api/logout", (req, res) => {
     res.status(200).send("Logged out successfully!")
   });
 });
+
+
+app.get("/api/getAllUsers", async (req, res) => {
+  try {
+    const result = await User.find();
+    res.send(result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Internal server error");
+  }
+
+})
+
+
+app.delete("/api/deleteUser/:userId", async (req, res) => {
+  const user_id =  req.params.userId
+  try {
+    const result = await User.deleteOne({_id: user_id});
+    res.send(result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Internal server error");
+  }
+
+})
+
+
+app.post("/api/editUser/:userId", async (req, res) => {
+  const user_id =  req.params.userId
+  const {email, password, address} = req.body
+  try {
+    const result = await User.updateOne({_id: user_id}, {email, password, address});
+    res.send(result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Internal server error");
+  }
+
+})
+//! Banners ---------------------------
+
 
 interface IBanner extends Document {
   banner_title: string;

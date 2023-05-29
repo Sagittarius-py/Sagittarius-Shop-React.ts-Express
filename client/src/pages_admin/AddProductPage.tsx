@@ -39,12 +39,12 @@ const AddProductPage: React.FC = () => {
     });
 
     // Clear form fields
-    // setProductName('');
-    // setQuantity('');
-    // setImageFile(null);
-    // setPrice('');
-    // setCategory('');
-    // setDescription('');
+    setProductName('');
+    setQuantity('');
+    setImageFile(null);
+    setPrice('');
+    setCategory('');
+    setDescription('');
   };
 
   return (

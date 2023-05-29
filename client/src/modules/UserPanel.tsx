@@ -4,6 +4,7 @@ import { useCookies } from 'react-cookie';
 
 import Login from './Login'
 import Profile from './Profile';
+import Register from './Register';
 
 
 const UserPanel = () => {
@@ -19,7 +20,11 @@ const UserPanel = () => {
             </div>
             <div className={`fixed bottom-0 right-0 z-40 h-screen bg-zinc-950 pt-16 ${profileOpened ? "w-96 p-4" :" w-0"} duration-200 shadow-xl shadow-orange-500/30`}>
               {!cookies.userId ? 
+              <>
               <Login />
+              <Register />
+              </>
+
               : 
               <Profile />
               }

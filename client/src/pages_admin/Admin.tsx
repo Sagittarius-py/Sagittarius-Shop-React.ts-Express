@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route } from "react-router-dom";
 
-import AdminPanel from './AdminPanel';
 import AddProductPage from './AddProductPage';
 import OrderBrowse from './OrderBrowse';
 import UserManagement from './UserManagement';
@@ -14,11 +13,7 @@ const AdminNavbar: React.FC = () => {
           <div className="flex-shrink-0">
             <h1 className="text-white text-lg font-semibold">Admin Panel</h1>
           </div>
-          <div className="hidden md:block">
-            <div className="ml-4 flex items-center md:ml-6">
-              <a href="/admin/addProduct" className='text-white'>Add Product</a>
-            </div>
-          </div>
+
         </div>
       </div>
     </nav>
@@ -35,7 +30,7 @@ const Admin = () => {
             <AddProductPage/> 
 
             </div>
-            <div id="rightPanel" className='w-4/5 h-screen p-2 flex bg-slate-500'>
+            <div id="rightPanel" className='w-4/5 h-screen p-2 flex flex-col bg-slate-500 space-y-4'>
 
                   <OrderBrowse />
                   <UserManagement />
