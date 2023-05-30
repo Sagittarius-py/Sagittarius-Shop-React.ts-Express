@@ -15,12 +15,9 @@ const Profile = () => {
           credentials: 'include',
 
         });
-        console.log(response)
         if (response.ok) {
           const win: Window = window;
           win.location = '/';
-        } else {
-          console.log('Something went wrong');
         }
     };
 

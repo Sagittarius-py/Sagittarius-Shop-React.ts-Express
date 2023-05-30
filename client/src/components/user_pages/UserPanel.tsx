@@ -24,7 +24,6 @@ const UserPanel = () => {
               <Login />
               <Register />
               </>
-
               : 
               <Profile />
               }

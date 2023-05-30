@@ -4,7 +4,7 @@
   import { useCookies } from 'react-cookie';
 
 import RewiewBox from './RewiewBox'
-import { HorizontalSeparator } from './SeparatorWithText'
+import { HorizontalSeparator } from '../order_pages/SeparatorWithText'
 
   export default function Product() {
     const [cookies, setCookie, removeCookie] = useCookies([`userId`]);

@@ -17,8 +17,6 @@ const Login = () => {
         if (response.ok) {
           const win: Window = window;
           win.location = '/';
-        } else {
-          console.log('Invalid username or password');
         }
     };
 

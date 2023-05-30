@@ -9,7 +9,6 @@ const ProductContainer = (props:any) => {
 
     useEffect(() => {
         Axios.get("http://localhost:8000/api/get").then((data) => {
-          console.log(data.data);
           setData(data.data);
         });
       }, []);

@@ -23,20 +23,9 @@ const AddProductPage: React.FC = () => {
     data.append("product_price", price);
     data.append("product_category", category);
     data.append("product_description", description);
-    Axios.post("http://localhost:8000/api/addProduct", data).then((res) => {
-          console.log(res);
-        });
+    Axios.post("http://localhost:8000/api/addProduct", data)
 
 
-    // e.g., send data to the server or update the state
-    console.log({
-      productName,
-      quantity,
-      imageFile,
-      price,
-      category,
-      description,
-    });
 
     // Clear form fields
     setProductName('');

@@ -17,7 +17,7 @@ const UserManagement: React.FC = () => {
   }, [])
 
   const handleDeleteUser = (userId: number) => {
-    Axios.delete(`http://localhost:8000/api/deleteUser/${userId}`).then((res)=> console.log(res))
+    Axios.delete(`http://localhost:8000/api/deleteUser/${userId}`)
     const win: Window = window;
     win.location = '/admin';
   };
@@ -35,8 +35,6 @@ const UserManagement: React.FC = () => {
     if (response.ok) {
       const win: Window = window;
       win.location = '/admin';
-    } else {
-      console.log('User alredy exists');
     }
   }
   
@@ -46,7 +44,7 @@ const UserManagement: React.FC = () => {
   }
 
   const handleSubmitEditedUser = async (userId: any) => {
-    Axios.post(`http://localhost:8000/api/editUser/${userId}`, userDataInEdit).then((res)=> console.log(res))
+    Axios.post(`http://localhost:8000/api/editUser/${userId}`, userDataInEdit)
     const win: Window = window;
     win.location = '/admin';
   }

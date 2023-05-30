@@ -1,5 +1,6 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 import {  useState } from 'react';
+import { useWindowSize } from '../WindowSizeProvider';
 
 
 
@@ -22,13 +23,12 @@ const Carousel = (props: { bannerList: any; }) => {
   }
   
   return(
-  <div className="relative z-10 flex items-center justify-center w-2/3 mx-auto shadow-2xl h-96">
+  <div className={`relative z-10 flex items-center justify-center ${useWindowSize().width > 720 ? "w-2/3" : "w-full h-[calc(100vh-5rem)]"} mx-auto shadow-2xl h-96`}>
     <ChevronLeftIcon onClick={() => {changeBannerHandle(-1)}} 
     className='absolute z-20 h-12 duration-300 ease-in-out bg-white rounded-full cursor-pointer left-3 hover:-translate-x-2 ' />
     {
       bannerList?.map((banner: any,key: number) => {
           var id = banner._id;
-          console.log(id)
           var title = banner.banner_title 
           var desc = banner.banner_desc;
           if(desc){

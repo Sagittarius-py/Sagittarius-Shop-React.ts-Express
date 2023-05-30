@@ -22,11 +22,7 @@ const Register = () => {
         if (response.ok) {
           const win: Window = window;
           win.location = '/';
-        } else {
-          console.log('User alredy exists');
-        }} else {
-            console.log('passwords arent the same')
-        }
+        }}
     };
 
 
