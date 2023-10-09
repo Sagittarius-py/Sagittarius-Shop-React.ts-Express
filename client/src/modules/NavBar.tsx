@@ -8,12 +8,12 @@ import { MagnifyingGlassIcon, HomeIcon, UserIcon, XMarkIcon, ShoppingBagIcon } f
 import { useCookies } from 'react-cookie';
 
 
-
 const NavBar = () => {
     const sizes = useWindowSize()
     return(
-    <>{sizes.width > 720 ? <NavBarDesktop />:<NavBarMobile />}</>
+    <>{sizes.width > 640 ? <NavBarDesktop />:<NavBarMobile />}</>
     )
+    
 }
 
 
@@ -39,7 +39,7 @@ const NavBarDesktop = () => {
     })
 
     return (
-        <div id="navbar" className={`fixed z-50 w-full duration-500 ${isScrolled ? "bg-zinc-950 shadow-lg shadow-orange-500/30" : null}`}>
+        <div id="navbar" className={`fixed z-50 w-full duration-500 ${isScrolled ? "bg-zinc-950 shadow-lg shadow-blue-500/30" : null}`}>
             <header className="w-[calc(100%-2rem)] h-16 rounded-full mx-4 flex items-center relative justify-between">
                 <a href="/">
                     <h1 className="text-3xl ml-4 rounded-full text-zinc-50" >Sagittarius Treasure</h1>               
@@ -67,17 +67,16 @@ const NavBarMobile = () => {
   
 
     return (
-        <div id="navbar" className={`fixed z-50 w-full duration-500 bottom-0 bg-zinc-700 shadow-lg `}>
-            <header className="w-[calc(100%-2rem)] h-16 rounded-full mx-4 flex items-center relative justify-between">
+        <div id="navbar" className={`fixed z-50 w-full duration-500 bottom-0 bg-gradient-to-t from-zinc-950/90 border-b-2 border-blue-500`}>
+            <header className="w-[calc(100%-2rem)] h-14 sm:h-16 rounded-full mx-4 flex items-center relative justify-between">
                 
                 <div className='float-right flex w-full justify-around'>
-                    <MagnifyingGlassIcon className='w-10 h-10 text-black bg-orange-500 rounded-full p-2'/>
-                    
                     <a href="/">
                         <HomeIcon className='w-10 h-10 text-black bg-orange-500 rounded-full p-2'/>         
                     </a>
-                    <UserIcon className='w-10 h-10 text-black bg-orange-500 rounded-full p-2'/>
-                    {cookies.userId ? <ShoppingBagIcon/> : null}
+                    <MagnifyingGlassIcon className='w-10 h-10 text-black bg-blue-500 rounded-full p-2'/>
+                    <UserIcon className='w-10 h-10 text-black bg-blue-500 rounded-full p-2'/>
+                    {cookies.userId ? <ShoppingBagIcon className='w-10 h-10 text-black bg-blue-500 rounded-full p-2'/> : null}
                 </div>
             </header>
         </div>

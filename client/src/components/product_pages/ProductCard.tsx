@@ -24,14 +24,14 @@ const ProductCard = (props:any) => {
 
     return(
         <div className={`z-40 m-4 relative duration-100 ${shadow} hover:shadow-orange-400/50 bg-zinc-50 h-[26rem] w-80 max-w-[600px] rounded-xl group/item`} >
-            <div className='bg-cover bg-center relative w-full h-3/5 flex justify-center items-center  border-t-[0.5px] border-x-[0.5px] border-orange-500 rounded-t-xl ' style={style}  />
+            <div className='bg-cover bg-center relative w-full h-3/5 flex justify-center items-center  border-t-[0.5px] border-x-[0.5px] border-blue-500 rounded-t-xl ' style={style}  />
             <h1 className='mt-1 ml-4 text-2xl'>{name}</h1>
             
             <p className='mx-2 text-sm'>{desc? desc.slice(0,100) :null}{desc ? desc.length > 100 ? "..." : null : null}</p>
             <h3 className='absolute text-lg font-semibold left-4 bottom-2'>{price}zł</h3>
-            <div className='w-0 group-hover/item:w-auto absolute right-2 bottom-2 overflow-hidden duration-100'>
+            <div className='sm:w-0 sm:group-hover/item:w-auto absolute right-2 bottom-2 overflow-hidden duration-100 rounded-xl sm:rounded-lg'>
 
-                <a className=' bg-orange-500 p-1 rounded-lg  hover:text-white duration-100' href={`/products/${id}` }>Check it out</a>
+                <a className=' bg-orange-500 p-2   hover:text-white duration-100' href={`/products/${id}` }>Check it out</a>
             </div>
         </div>
     )}

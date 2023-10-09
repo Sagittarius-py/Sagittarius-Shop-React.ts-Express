@@ -1,10 +1,12 @@
 import Axios from "axios";
 import { useState, useEffect } from "react";
+import { useCookies } from "react-cookie";
 
 
 const CartProduct = (props: any) => {
     const productId = props.item[0];
 
+    const [cookies, setCookie, removeCookie] = useCookies([`userId`]);
     const [productData, setProductData] = useState<any>()
     const [productAmount, setProductAmount] = useState<number>(props.item[1])
 
@@ -20,6 +22,23 @@ const CartProduct = (props: any) => {
         setProductAmount(value);
     }
 
+    const deleteFromCart = async (productId: any) => {
+        const userId = cookies.userId;
+        const response = await fetch("http://localhost:8000/api/deleteFromBag", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ userId, productId }),
+        });
+        console.log(response)
+        if (response.ok) {
+            const win: Window = window;
+            win.location.reload();
+        }
+      };
+
 
     let style = { backgroundImage: `url(http://localhost:8000/${productId}_0.jpg)` }
     return(
@@ -31,7 +50,7 @@ const CartProduct = (props: any) => {
         </div>
         <div className="flex flex-col items-center w-16">
             <h1 className="text-xl">{productData?.product_price}zł</h1>
-            <button className="bg-red-600 text-red w-fit px-1 rounded">Del</button>
+            <button className="bg-red-600 text-red w-fit px-1 rounded" onClick={() => deleteFromCart(productId)}>Del</button>
         </div>
     </div>
     )

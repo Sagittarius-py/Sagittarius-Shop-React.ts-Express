@@ -154,6 +154,26 @@ app.get("/api/getShoppingBag/:userId", async (req: any, res: any) => {
   }
 )
 
+app.post("/api/deleteFromBag/", async (req, res) => {
+  const { userId, productId } = req.body;
+
+  const user = await User.findOne({ _id: userId });
+  if (user) {
+    const newShoppingBag = user.shopping_bag.filter((product: any) => {
+      return product[0] !== productId;
+    });
+
+    try {
+      const result = await User.updateOne({ shopping_bag: newShoppingBag });
+      res.status(200).send(result);
+    } catch (err) {
+      console.log(err);
+    }
+  } else {
+    res.status(500).send("server error");
+  }
+});
+
 
 
 // ! Users -----------------------------------------------------

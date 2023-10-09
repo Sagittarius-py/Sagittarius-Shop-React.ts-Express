@@ -10,7 +10,6 @@ import { WindowSizeProvider, useWindowSize } from './WindowSizeProvider';
 
 
 function App() {
-
   return (
     <div  className='bg-zinc-900 min-h-screen'>
       <WindowSizeProvider>
@@ -19,6 +18,8 @@ function App() {
           <Route path="/admin" exact>
             <Admin/>
           </Route>
+
+          
 
           <Route path="/" exact>
             <Landing/>
@@ -32,7 +33,7 @@ function App() {
             <Summary/>
           </Route>
       </Router>
-      <Footer/>
+      <Footer/>      
       </WindowSizeProvider>
     </div>
   );

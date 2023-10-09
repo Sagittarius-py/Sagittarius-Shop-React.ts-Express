@@ -1,4 +1,7 @@
+import { WindowSizeProvider, useWindowSize } from '../WindowSizeProvider';
+
 const Footer = () => {
+    if(useWindowSize().width > 640){
     return(
         <>
         <div className="w-full h-24 bg-zinc-950 border-t-2 border-orange-500/60 flex flex-col justify-center items-center">
@@ -6,7 +9,11 @@ const Footer = () => {
             <a href="/admin" className="text-white">Admin</a>
         </div>
         </>
-    )
+    )} else {
+        return (
+            <div className='w-full h-16'></div>
+        )
+    }
 }
 
 export default Footer;

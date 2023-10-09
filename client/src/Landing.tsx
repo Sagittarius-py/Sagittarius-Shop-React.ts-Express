@@ -15,7 +15,7 @@ const Landing = () => {
 
 
     return(
-        <div className={`${useWindowSize().width > 720 ? " pt-24" : "pt-6"} `}>
+        <div className={`${useWindowSize().width > 640 ? " pt-24" : "pt-6"} `}>
             <Carousel bannerList={data}/> 
             <ProductContainer />
         </div>

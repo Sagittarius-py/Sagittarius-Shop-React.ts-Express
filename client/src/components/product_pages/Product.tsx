@@ -34,6 +34,7 @@ import { HorizontalSeparator } from '../order_pages/SeparatorWithText'
       const userId = cookies.userId
       let data = {productID,  userId}
       Axios.post(`http://localhost:8000/api/AddProductToBag`, data)
+      window.location.reload();
     }
   
     if(product)

@@ -5,7 +5,7 @@ import { useCookies } from 'react-cookie';
 
 const Profile = () => {
     const [cookies, setCookie, removeCookie] = useCookies([`email`]);
-    const handleLogOur = async (e: any) => {
+    const handleLogOut = async (e: any) => {
       e.preventDefault();
         const response = await fetch('http://localhost:8000/api/logout', {
           method: 'GET',
@@ -27,7 +27,7 @@ const Profile = () => {
               <div className='bg-zinc-100 h-fit w-full p-4 select-none'>
                 <h1>{cookies.email}</h1>
               </div>
-            <button onClick={(e) => handleLogOur(e)} className="absolute bottom-4 left-4 bg-orange-500 px-4 py-2 rounded-sm hover:scale-110 duration-75">Log-out</button>
+            <button onClick={(e) => handleLogOut(e)} className="absolute bottom-4 left-4 bg-orange-500 px-4 py-2 rounded-sm hover:scale-110 duration-75">Log-out</button>
 
             </>  
     )

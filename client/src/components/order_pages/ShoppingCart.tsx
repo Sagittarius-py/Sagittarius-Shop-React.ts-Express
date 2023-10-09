@@ -14,6 +14,8 @@ const ShoppingCart = () => {
       Axios.get(`http://localhost:8000/api/getShoppingBag/${cookies.userId}`).then((data) => {setCartItems(data.data);})
       }
     }, [])
+
+    
     
 
     return (
