@@ -14,15 +14,21 @@ const Login = () => {
           credentials: 'include',   
           body: JSON.stringify({ email, password })
         });
-        if (response.ok) {
+        if (response.status === 200) {
+
           const win: Window = window;
           win.location = '/';
+        } else if(response.status === 201) {
+          alert("User with this login cannot be found in our database. Please try other logn or register.")
+        } else if(response.status === 202) {
+          alert("Password incorrect. Please try again. ")
         }
     };
 
 
     return(
               <div className='bg-zinc-100 h-fit w-full p-4'>
+              <h3 className='justify-center w-full flex'>Login</h3>
               <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label className="text-sm font-medium text-gray-700 block">Email</label>

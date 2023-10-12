@@ -191,17 +191,18 @@ app.post("/api/login", async (req: any, res: any) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.send({ error: "User not found" });
+      return res.status(201).send("User not found" );
     }
-
+    console.log(user)
     const isPasswordMatch = password == user.password;
     if (!isPasswordMatch) {
-      return res.status(401).json({ error: "Invalid password" });
+      res.status(202).send("Invalid password" );
     } else {
       user.password = "";
-      req.session.user = { id: user._id, email: email};
+      req.session.user = { id: user._id, email: email, address: user.address};
       res.cookie('userId', user._id); 
       res.cookie('email', email);
+      res.cookie('address', user.address)
       res.status(200).send('Login successful');
     }
   } catch (error) {
@@ -295,7 +296,7 @@ const BannerSchema = new Schema<IBanner>({
   banner_desc: String,
 });
 
-const banner = mongoose.model<IBanner>("Banner", BannerSchema);
+  const banner = mongoose.model<IBanner>("Banner", BannerSchema);
 
 app.get("/api/getBanners", async (req, res) => {
   try {
@@ -325,6 +326,38 @@ app.post("/api/addProduct", upload.single("product_photos"), (req:any, res:any) 
     })
   }
 );
+
+// !Get all cities ===================================
+
+interface ICity extends Document {
+  id: number;
+  nazwa: string;
+  kod_pocztowy: string;
+}
+
+const CitySchema = new Schema<ICity>({
+  id: Number,
+  nazwa: String,
+  kod_pocztowy: String,
+});
+
+
+const city = mongoose.model<ICity>("City", CitySchema);
+
+
+app.post("/api/getCities", async (req:any, res:any) => {
+   try{
+      const result = await city.find();
+
+      console.log(result);
+      res.send(result);
+   } catch (err) {
+    console.log(err);
+    res.status(500).send("Internal server error");
+   } 
+})
+
+
 
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
