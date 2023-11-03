@@ -1,13 +1,20 @@
 const express =  require("express");
 import mongoose, { Schema, Document } from "mongoose";
 const bodyParser = require("body-parser");
-const bcrypt = require("bcrypt");
 const cors = require("cors");
 const multer = require ("multer");
 const fs = require("fs")
 const session = require('express-session');
+const audit =  require('express-requests-logger')
+const crypto = require('crypto');
+const algorithm = 'aes-256-cbc';
+
+
+const key = "BardzoTajnyKluczSzyfrujący";
+const iv = "BardzoTajneIdSzyfrowania";
 
 const app = express();
+// app.use(audit()) // logging all data transfered thru server
 app.use(bodyParser.json());
 app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
 app.use(express.static("public"));
@@ -35,8 +42,6 @@ db.once("open", function () {
 db.on("error", function (err) {
   console.log(err);
 });
-
-
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -115,6 +120,7 @@ app.get("/api/get", async (req, res) => {
 
 app.get("/api/getOneProduct/:productID", async (req, res) => {
   const productID = req.params.productID;
+
   try {
     const result = await product.find({ _id: productID });
     res.send(result);
@@ -126,20 +132,18 @@ app.get("/api/getOneProduct/:productID", async (req, res) => {
 
 
 app.post("/api/AddProductToBag", async (req, res) => {
-  console.log(req.body)
   const {productID, userId} = req.body;
-  const user = await User.findOne({ _id: userId }).then((document) => {
+  await User.findOne({ _id: userId }).then((document) => {
     if (document) {
-      document.shopping_bag.push([productID, 1]);
-
+      document.shopping_bag.push(productID);
       // Save the changes
       return document.save();
     } else {
       throw new Error('Document not found');
     }
   })
-  .then((updatedDocument) => {
-    console.log('Document updated:', updatedDocument);
+  .then(() => {
+    console.log('Document updated');
   })
   .catch((error) => {
     console.error('Error updating document:', error);
@@ -154,15 +158,14 @@ app.get("/api/getShoppingBag/:userId", async (req: any, res: any) => {
   }
 )
 
-app.post("/api/deleteFromBag/", async (req, res) => {
+app.delete("/api/deleteFromBag/", async (req, res) => {
   const { userId, productId } = req.body;
 
   const user = await User.findOne({ _id: userId });
   if (user) {
     const newShoppingBag = user.shopping_bag.filter((product: any) => {
-      return product[0] !== productId;
+      return product != productId;
     });
-
     try {
       const result = await User.updateOne({ shopping_bag: newShoppingBag });
       res.status(200).send(result);
@@ -174,15 +177,48 @@ app.post("/api/deleteFromBag/", async (req, res) => {
   }
 });
 
+app.get("/api/")
+
 
 
 // ! Users -----------------------------------------------------
 
+interface IEncryptionResult extends Document {
+  iv: string;
+  encryptedData: string;
+}
+
+const PasswordSchema = new Schema<IEncryptionResult>({
+  iv: String,
+  encryptedData: String,
+});
+
+function encrypt(text) {
+  let cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
+  let encrypted = cipher.update(text);
+  encrypted = Buffer.concat([encrypted, cipher.final()]);
+  return { iv: iv.toString(), encryptedData: encrypted.toString('hex') };
+}
+
+function decrypt(text) {
+  let iv = Buffer.from(text.iv, 'hex');
+  let encryptedText = Buffer.from(text.encryptedData, 'hex');
+  let decipher = crypto.createDecipheriv(algorithm, Buffer.from(key), iv);
+  let decrypted = decipher.update(encryptedText);
+  decrypted = Buffer.concat([decrypted, decipher.final()]);
+  return decrypted.toString();
+}
+
 const User = mongoose.model<any>("User", {
   email: String,
-  password: String,
+  password: PasswordSchema,
+  name: String,
+  surname: String,
   shopping_bag: Array,
   address: String,
+  city: String,
+  postalCode: String,
+  age: Number,
 });
 
 
@@ -193,16 +229,14 @@ app.post("/api/login", async (req: any, res: any) => {
     if (!user) {
       return res.status(201).send("User not found" );
     }
-    console.log(user)
-    const isPasswordMatch = password == user.password;
+    const isPasswordMatch = password == decrypt(user.password);
     if (!isPasswordMatch) {
       res.status(202).send("Invalid password" );
     } else {
       user.password = "";
-      req.session.user = { id: user._id, email: email, address: user.address};
+      req.session.user = { id: user._id, email: email, address: user.address, postalCode: user.postalCode, age: user.age};
       res.cookie('userId', user._id); 
       res.cookie('email', email);
-      res.cookie('address', user.address)
       res.status(200).send('Login successful');
     }
   } catch (error) {
@@ -212,15 +246,18 @@ app.post("/api/login", async (req: any, res: any) => {
 });
 
 app.post("/api/register", async (req: any, res: any) => {
-  const { email, password, address } = req.body;
+  const { email, password, address, postalCode, age } = req.body;
   try {
     const user = await User.findOne({ email });
     if(!user){
+
       var newUser = {
-        "password": password, 
+        "password": encrypt(password), 
         "shopping_bag": [],
+        "email": email,
         "address": address,
-        "email": email
+        "postalCode": postalCode,
+        "age": age,
       }
       User.create(newUser)
       res.status(200).send("User created!")
@@ -248,6 +285,22 @@ app.get("/api/getAllUsers", async (req, res) => {
   try {
     const result = await User.find();
     res.send(result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Internal server error");
+  }
+
+})
+
+app.get("/api/getUser/:userId", async (req, res) => {
+  const user_id =  req.params.userId
+  try {
+    const user = await User.findOne({ _id: user_id });
+    if(user){
+      res.status(200).send(user);
+    } else {
+      res.status(501).send("User not found");
+    }
   } catch (err) {
     console.log(err);
     res.status(500).send("Internal server error");
@@ -310,6 +363,7 @@ app.get("/api/getBanners", async (req, res) => {
 
 
 // !Create Product ======================================
+
 app.post("/api/addProduct", upload.single("product_photos"), (req:any, res:any) => {
     var{ product_name, product_quantity, product_price, product_category, product_description} = req.body;
     var newProduct = {
@@ -317,7 +371,7 @@ app.post("/api/addProduct", upload.single("product_photos"), (req:any, res:any) 
       "product_category": product_category,
       "product_price": product_price,
       "product_stock": product_quantity,
-      "product_rewiews": [],
+      "product_reviews": [],
       "product_description":product_description
     }
     product.create(newProduct)
@@ -342,14 +396,12 @@ const CitySchema = new Schema<ICity>({
 });
 
 
-const city = mongoose.model<ICity>("City", CitySchema);
+const City = mongoose.model<ICity>("City", CitySchema);
 
 
 app.post("/api/getCities", async (req:any, res:any) => {
    try{
-      const result = await city.find();
-
-      console.log(result);
+      const result = await City.find();
       res.send(result);
    } catch (err) {
     console.log(err);
@@ -357,8 +409,34 @@ app.post("/api/getCities", async (req:any, res:any) => {
    } 
 })
 
+app.get("/api/getOneCity/:postalCode", async (req:any, res:any) => {
+  const kodPocz =  req.params.postalCode
+  try{
+    const city = await City.findOne({ kod_pocztowy: kodPocz });
+    res.status(200).send(city)
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Internal server error");
+  }
+})
 
 
+// !Order Summary ===================================
+
+const OrderSchema = new mongoose.Schema({
+  _id: mongoose.Schema.Types.ObjectId,
+  userId: mongoose.Schema.Types.ObjectId,
+  products: [mongoose.Schema.Types.ObjectId],
+  address: String,
+  postalCode: String,
+});
+
+const Order = mongoose.model('Order', OrderSchema);
+
+
+
+
+// !Server ==========================================
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
+    "module": "NodeNext",
     "target": "ES5",
-    "module": "commonjs",
     "sourceMap": true,
     "jsx": "preserve",
     "allowJs": true,
