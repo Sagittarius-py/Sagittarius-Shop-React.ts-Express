@@ -8,10 +8,8 @@ const session = require('express-session');
 const audit =  require('express-requests-logger')
 const crypto = require('crypto');
 const algorithm = 'aes-256-cbc';
+const encription = require('./encription')
 
-
-const key = "BardzoTajnyKluczSzyfrujący";
-const iv = "BardzoTajneIdSzyfrowania";
 
 const app = express();
 // app.use(audit()) // logging all data transfered thru server
@@ -28,6 +26,14 @@ app.use(session({
     secure: false // set it to true if your app uses HTTPS
   }
 }));
+
+app.on('listening', function () {
+  if(key == null && iv == null){
+    var key = encription.encription().key;
+    var iv = encription.encription().iv;
+  }
+});
+
 
 mongoose
   .connect("mongodb+srv://admin:admin@cluster0.6hwms.mongodb.net/products")
@@ -153,7 +159,7 @@ app.post("/api/AddProductToBag", async (req, res) => {
 app.get("/api/getShoppingBag/:userId", async (req: any, res: any) => {
   const userId = req.params.userId
   const user = await User.findOne({ _id: userId })
-  if(user.shopping_bag){
+  if(user?.shopping_bag){
     res.status(200).send(user.shopping_bag)}
   }
 )
@@ -177,10 +183,6 @@ app.delete("/api/deleteFromBag/", async (req, res) => {
   }
 });
 
-app.get("/api/")
-
-
-
 // ! Users -----------------------------------------------------
 
 interface IEncryptionResult extends Document {
@@ -193,15 +195,19 @@ const PasswordSchema = new Schema<IEncryptionResult>({
   encryptedData: String,
 });
 
-function encrypt(text) {
+function encrypt(text: any) {
+  var key = encription.encription().key;
+  var iv = encription.encription().iv;
   let cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
   let encrypted = cipher.update(text);
   encrypted = Buffer.concat([encrypted, cipher.final()]);
   return { iv: iv.toString(), encryptedData: encrypted.toString('hex') };
 }
 
-function decrypt(text) {
-  let iv = Buffer.from(text.iv, 'hex');
+function decrypt(text: any) {
+  var key = encription.encription().key;
+  var iv = encription.encription().iv;
+  iv = Buffer.from(text.iv);
   let encryptedText = Buffer.from(text.encryptedData, 'hex');
   let decipher = crypto.createDecipheriv(algorithm, Buffer.from(key), iv);
   let decrypted = decipher.update(encryptedText);
@@ -212,13 +218,9 @@ function decrypt(text) {
 const User = mongoose.model<any>("User", {
   email: String,
   password: PasswordSchema,
-  name: String,
-  surname: String,
   shopping_bag: Array,
   address: String,
-  city: String,
   postalCode: String,
-  age: Number,
 });
 
 
@@ -227,14 +229,14 @@ app.post("/api/login", async (req: any, res: any) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(201).send("User not found" );
+      return res.status(404).send("User not found" );
     }
     const isPasswordMatch = password == decrypt(user.password);
     if (!isPasswordMatch) {
-      res.status(202).send("Invalid password" );
+      res.status(406).send("Invalid password" );
     } else {
       user.password = "";
-      req.session.user = { id: user._id, email: email, address: user.address, postalCode: user.postalCode, age: user.age};
+      req.session.user = { id: user._id, email: email};
       res.cookie('userId', user._id); 
       res.cookie('email', email);
       res.status(200).send('Login successful');
@@ -246,19 +248,22 @@ app.post("/api/login", async (req: any, res: any) => {
 });
 
 app.post("/api/register", async (req: any, res: any) => {
-  const { email, password, address, postalCode, age } = req.body;
-  try {
-    const user = await User.findOne({ email });
-    if(!user){
+  const { email, password, address, postalCode } = req.body;
+  console.log(req.body)
+  console.log(email, password, address, postalCode);
 
+  try {
+    const user = await User.findOne({ "email": email });
+    if(!user){
+      var encryptedPassword = encrypt(password)
       var newUser = {
-        "password": encrypt(password), 
-        "shopping_bag": [],
         "email": email,
+        "password": encryptedPassword, 
+        "shopping_bag": [],
         "address": address,
         "postalCode": postalCode,
-        "age": age,
       }
+      console.log("tu się sypie")
       User.create(newUser)
       res.status(200).send("User created!")
     }
@@ -324,9 +329,9 @@ app.delete("/api/deleteUser/:userId", async (req, res) => {
 
 app.post("/api/editUser/:userId", async (req, res) => {
   const user_id =  req.params.userId
-  const {email, password, address} = req.body
+  const {email, postalCode, address} = req.body
   try {
-    const result = await User.updateOne({_id: user_id}, {email, password, address});
+    const result = await User.updateOne({_id: user_id}, {email, postalCode, address});
     res.send(result);
   } catch (err) {
     console.log(err);

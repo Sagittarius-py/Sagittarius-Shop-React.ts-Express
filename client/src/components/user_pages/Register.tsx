@@ -7,7 +7,6 @@ const Register = () => {
     const [password2, setPassword2] = useState("");
     const [address, setAddress] = useState("");
     const [postalCode, setPostalCode] = useState("");
-    const [age, setAge] = useState("");
     const [cities, setCities] = useState<any>();
 
     useEffect(() => {
@@ -24,7 +23,7 @@ const Register = () => {
             'Content-Type': 'application/json'
           },
           credentials: 'include',   
-          body: JSON.stringify({ email, password, address, postalCode, age })
+          body: JSON.stringify({ email, password, address, postalCode })
         });
         if (response.ok) {
           const win: Window = window;
@@ -100,14 +99,7 @@ const Register = () => {
               })}
             </select>
           </div>
-          <div className='flex flex-col w-1/4  ml-2'>
-            <label className="text-sm font-medium text-gray-700 block w-full">Age</label>
-            <input
-              type="number"
-              onChange={(e) => setAge(e.target.value)}
-              className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-            />
-          </div>
+
         </div>
         <div>
           <button

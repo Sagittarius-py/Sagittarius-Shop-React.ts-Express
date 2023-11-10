@@ -5,16 +5,33 @@ import Axios from 'axios';
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [newUserName, setNewUserName] = useState('');
-
+  const [cities, setCities] = useState<any>();
   const [userInEdit, setUserInEdit] = useState('');
-  const [userDataInEdit, setUserDataInEdit] = useState({email: "", password: "", address: ""})
+  const [userDataInEdit, setUserDataInEdit] = useState({email: "", postalCode: "", address: ""})
 
-  const [userData, setUserData] = useState({email: "", password: "", address: ""})
+  const [userData, setUserData] = useState({email: "", postalCode: "", address: ""})
 
   useEffect(() => {
     Axios.get("http://localhost:8000/api/getAllUsers").then(data => setUsers(data.data))
-
+    getCities();
   }, [])
+
+
+  const getCities = async () => {
+    const response = await fetch('http://localhost:8000/api/getCities', { 
+      method: 'POST', 
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',   
+    });
+
+    if (response.ok) {
+      const jsonResponse = await response.json()
+      setCities(jsonResponse);
+      console.log(cities)
+    }
+  }
 
   const handleDeleteUser = (userId: number) => {
     Axios.delete(`http://localhost:8000/api/deleteUser/${userId}`)
@@ -23,14 +40,14 @@ const UserManagement: React.FC = () => {
   };
 
   const handleAddUser = async () => {
-    const { email, password, address } = userData;
+    const { email, address, postalCode } = userData;
     const response = await fetch('http://localhost:8000/api/register', { 
       method: 'POST', 
       headers: {
         'Content-Type': 'application/json'
       },
       credentials: 'include',   
-      body: JSON.stringify({ email, password, address })
+      body: JSON.stringify({ email, postalCode, address })
     });
     if (response.ok) {
       const win: Window = window;
@@ -40,7 +57,7 @@ const UserManagement: React.FC = () => {
   
   const handleEditUser =  (user: any) => {
     setUserInEdit(user._id)
-    return setUserDataInEdit({email: user.email,  password: user.password, address: user.address});
+    return setUserDataInEdit({email: user.email,  postalCode: user.postalCode, address: user.address});
   }
 
   const handleSubmitEditedUser = async (userId: any) => {
@@ -69,7 +86,7 @@ const UserManagement: React.FC = () => {
             <tr>
               <th className="px-4 py-2">User ID</th>
               <th className="px-4 py-2">Email</th>
-              <th className="px-4 py-2">Password</th>
+              <th className="px-4 py-2">Postal Code</th>
               <th className="px-4 py-2">Address</th>
               <th className="px-4 py-2">Actions</th>
             </tr>
@@ -81,7 +98,19 @@ const UserManagement: React.FC = () => {
                 <>
                 <td className="border px-4 py-2">{user._id}</td>
                 <td className="border px-4 py-2"><input type="text" defaultValue={user.email} onChange={(e) => {return setUserDataInEdit({...userDataInEdit, "email": e.target.value})}}/></td>
-                <td className="border px-4 py-2"><input type="text" defaultValue={user.password}  onChange={(e) => {return setUserDataInEdit({...userDataInEdit, "password": e.target.value})}}/></td>
+                <td className="border px-4 py-2">
+                <select
+                  onChange={(e) => setUserDataInEdit({...userDataInEdit, "postalCode": e.target.value})}
+                  className="border w-full border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
+                >
+                  {cities?.map((city:any) => {
+                    return <>
+                    <option key={city.id} value={city.kod_pocztowy}>{city.kod_pocztowy + " | " + city.nazwa}</option>
+                    </>
+                  })}
+                </select>
+
+                </td>
                 <td className="border px-4 py-2"><input type="text" defaultValue={user.address}  onChange={(e) => {return setUserDataInEdit({...userDataInEdit, address: e.target.value})}}/></td>
                 
                 <td className="border px-4 py-2">
@@ -104,7 +133,7 @@ const UserManagement: React.FC = () => {
                 <>
                 <td className="border px-4 py-2">{user._id}</td>
                 <td className="border px-4 py-2">{user.email}</td>
-                <td className="border px-4 py-2">{user.password}</td>
+                <td className="border px-4 py-2">{user.postalCode}</td>
                 <td className="border px-4 py-2">{user.address}</td>
                 
                 <td className="border px-4 py-2">
@@ -127,19 +156,6 @@ const UserManagement: React.FC = () => {
                 
               </tr>
             ))}
-          <tr>
-              <th className="px-4 py-2">Add User</th>
-              <th className="px-4 py-2"><input type="text" placeholder='email' className='w-full' onChange={(e) => setUserData({...userData, email: e.target.value})}/></th>
-              <th className="px-4 py-2"><input type="text" placeholder='password' className='w-full' onChange={(e) => setUserData({...userData, password: e.target.value})}/></th>
-              <th className="px-4 py-2"><input type="text" placeholder='address' className='w-full' onChange={(e) => setUserData({...userData, address: e.target.value})}/></th>
-              <th className="px-4 py-2">
-                <button
-                    className="text-blue-500 hover:text-blue-600 mr-2"
-                    onClick={() => handleAddUser()}
-                  >
-                    Submit
-                  </button></th>
-            </tr>
             </tbody>
         </table>
       ) : (
