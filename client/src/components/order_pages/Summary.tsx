@@ -10,12 +10,12 @@ interface ShippingOption {
 }
 
 interface OrderSummary {
-  userId: string,
+  userId: any,
   products: string[],
-  shippingId: string,
   address: string,
   postalCode: string,
-  sumPrice: number,
+  shippingPrice: number,
+  sumPrice: number
 }
 
 const Summary = () => {
@@ -29,13 +29,25 @@ const Summary = () => {
   const [cityData, setCityData] = useState<any>();
   let [sumPrice, setSumPrice] = useState<number>(0.00)
 
-  let [orderSummary, setOrderSummary] = useState<OrderSummary | null>(null)
+  let [orderSummary, setOrderSummary] = useState<OrderSummary>({
+    "userId": "",
+    "products": [],
+    "address": "",
+    "postalCode": "",
+    "shippingPrice": 0,
+    "sumPrice": 0,
+  })
 
   const shippingOptions: ShippingOption[] = [
     { id: 1, name: 'Standard Shipping', price: 9.99 },
     { id: 2, name: 'Express Shipping', price: 19.99 },
     { id: 3, name: 'Priority Shipping', price: 29.99 },
+    
   ];
+
+  useEffect(() => {
+    getUserInfo();
+  }, [])
 
   const getUserInfo = async () => {
     if(cookies.userId != null){
@@ -50,17 +62,35 @@ const Summary = () => {
       }}
   }
 
-  useEffect(() => {
-    getUserInfo();
-  }, [])
+  const changeSumarry = () => {
+    orderSummary = {
+      "userId": userData._id,
+      "products": userData.shopping_bag,
+      "address": userData.address,
+      "postalCode": userData.postalCode,
+      "shippingPrice": selectedOption.price,
+      "sumPrice": sumPrice
+  }
+  console.log(orderSummary)
+
+  }
+
+  const proceedPayment = async () => {
+    changeSumarry()
+    if(selectedOption.price !== 0){
+      await Axios.post(`http://localhost:8000/api/addOrder/`, orderSummary)
+    }
+    console.log(orderSummary)
+  }
+
+
 
   const handleOptionSelect = (option: ShippingOption) => {
     setSelectedOption(option);
   };
 
   var increaseValue = async (value: number) => {
-    setSumPrice(sumPrice + value)
-    console.log(sumPrice)
+    setSumPrice(sumPrice += value)
   }
   
 
@@ -91,7 +121,6 @@ const Summary = () => {
             <div className="relative flex flex-col lg:flex-row justify-between h-full">
               <div className="bg-zinc-200 rounded shadow px-6 py-4 w-full mb-2 lg:w-1/3 mr-4">
               <h2 className="text-2xl font-semibold mb-4 ">Shipping Address</h2>
-                <p>{userData?.name + " " + userData?.surname}</p>
                 <p>{userData?.address}</p>
                 <p>{cityData?.nazwa + " " + cityData?.kod_pocztowy}</p>
               </div>
@@ -109,7 +138,7 @@ const Summary = () => {
                             ? 'bg-blue-200'
                             : 'bg-white hover:bg-gray-100'
                         }`}
-                        onClick={() => handleOptionSelect(option)}
+                        onClick={() =>{ handleOptionSelect(option);}}
                       >
                         <span>{option.name}</span>
                         <span>${option.price.toFixed(2)}</span>
@@ -123,6 +152,13 @@ const Summary = () => {
           </div>
   
           <div className="mt-8">
+            <div className='w-full h-16 flex justify-center'>
+                <button onClick={() => {
+                  proceedPayment()
+                }} className={`${selectedOption.id === 0 ? "bg-orange-500/50 text-white/50" : "text-white hover:shadow-orange-500/30 bg-orange-500 hover:shadow-xl   hover:scale-125 hover:bg-orange-600 transition ease-in-out duration-300"} p-4 rounded-xl  text-2xl`}>
+                  Proceed and pay
+                </button>
+            </div>
             <h2 className="text-xl font-semibold mb-4 text-zinc-200" >Items</h2>
             {userData?.shopping_bag.map((item:any, key:any) =>{
               return <CartProduct item={item}  key={key} addToSum={increaseValue}/>

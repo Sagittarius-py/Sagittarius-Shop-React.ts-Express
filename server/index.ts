@@ -429,16 +429,40 @@ app.get("/api/getOneCity/:postalCode", async (req:any, res:any) => {
 // !Order Summary ===================================
 
 const OrderSchema = new mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
-  userId: mongoose.Schema.Types.ObjectId,
-  products: [mongoose.Schema.Types.ObjectId],
-  address: String,
-  postalCode: String,
+  order_userId: mongoose.Schema.Types.ObjectId,
+  order_products: [mongoose.Schema.Types.ObjectId],
+  order_address: String,
+  order_postalCode: String,
+  order_sumPrice: Number,
+  order_date: String,
 });
 
-const Order = mongoose.model('Order', OrderSchema);
+const order = mongoose.model('Order', OrderSchema);
 
+app.post("/api/addOrder/", async (req: any, res:any) => {
+  let i = 0;
+  const {userId, products, address, postalCode, shippingPrice, sumPrice} = req.body;
+  var finalPrice = shippingPrice + sumPrice;
+  finalPrice = finalPrice.toFixed(2);
 
+  const result = await order.find();
+
+  var newOrder = {
+    "order_userId": userId, 
+    "order_products": products,
+    "order_address": address,
+    "order_postalCode": postalCode,
+    "order_sumPrice": finalPrice,
+    "order_date": new Date().toUTCString().slice(0, 25),
+  }
+
+  
+
+  order.create(newOrder)
+
+  return res.redirect('/payment')
+
+})
 
 
 // !Server ==========================================
