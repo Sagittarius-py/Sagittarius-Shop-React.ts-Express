@@ -439,13 +439,12 @@ const OrderSchema = new mongoose.Schema({
 
 const order = mongoose.model('Order', OrderSchema);
 
+// Submit order to database
 app.post("/api/addOrder/", async (req: any, res:any) => {
   let i = 0;
   const {userId, products, address, postalCode, shippingPrice, sumPrice} = req.body;
   var finalPrice = shippingPrice + sumPrice;
   finalPrice = finalPrice.toFixed(2);
-
-  const result = await order.find();
 
   var newOrder = {
     "order_userId": userId, 
@@ -456,11 +455,36 @@ app.post("/api/addOrder/", async (req: any, res:any) => {
     "order_date": new Date().toUTCString().slice(0, 25),
   }
 
+  order.create(newOrder).then(insertedOrder => {
+    return res.send(insertedOrder._id)
+  })
+})
+
+app.get("/api/getOrder/:orderId", async (req: any, res: any) =>{
+  const orderId =  req.params.orderId;
+  try{
+    if(orderId) {
+      const wynik = await order.findOne({_id: orderId})
+      res.send(wynik)
+    }
   
+  } catch (err) {
+    console.log(err);
+    res.status(501).send("Internal server error");
+  }
+})
 
-  order.create(newOrder)
 
-  return res.redirect('/payment')
+app.get("/api/getAllOrders", async (req: any, res: any) => {
+    try{
+      const wynik = await order.find()
+      console.log(wynik)
+      res.send(wynik)
+    } catch (err) {
+      console.log(err);
+      res.status(501).send("Internal server error");
+  
+    }
 
 })
 

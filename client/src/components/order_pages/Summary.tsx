@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Axios from 'axios';
 import { useCookies } from 'react-cookie';
 import CartProduct from "./CartProduct";
+import { useHistory  } from "react-router-dom";
 
 interface ShippingOption {
   id: number;
@@ -19,6 +20,7 @@ interface OrderSummary {
 }
 
 const Summary = () => {
+  const history = useHistory ();
   const [cookies, setCookie, removeCookie] = useCookies([`userId`]);
   const [selectedOption, setSelectedOption] = useState<ShippingOption>({
     "id": 0,
@@ -78,7 +80,9 @@ const Summary = () => {
   const proceedPayment = async () => {
     changeSumarry()
     if(selectedOption.price !== 0){
-      await Axios.post(`http://localhost:8000/api/addOrder/`, orderSummary)
+      await Axios.post(`http://localhost:8000/api/addOrder/`, orderSummary).then(data =>{
+        history.push(`/payment/${data.data}`);
+      })
     }
     console.log(orderSummary)
   }

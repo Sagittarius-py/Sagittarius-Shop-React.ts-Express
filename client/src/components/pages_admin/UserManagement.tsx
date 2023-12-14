@@ -67,25 +67,16 @@ const UserManagement: React.FC = () => {
   }
 
   return (
-    <div className="w-fit h-fit bg-slate-100 rounded-xl ml-2 p-2">
+    <div className="w-full h-80 bg-slate-100 rounded-xl ml-2 p-2">
       <h1 className="text-3xl font-semibold mb-4">User Management</h1>
 
-      <div className="mb-4">
-        <input
-          type="text"
-          placeholder="Enter user name"
-          value={newUserName}
-          onChange={(e) => setNewUserName(e.target.value)}
-          className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-        />
-      </div>
-
+      <div className='h-56 overflow-auto'>
       {users.length > 0 ? (
         <table className="table-auto w-full">
           <thead>
             <tr>
-              <th className="px-4 py-2">User ID</th>
-              <th className="px-4 py-2">Email</th>
+              <th className="px-4 py-2">Order Id</th>
+              <th className="px-4 py-2">User</th>
               <th className="px-4 py-2">Postal Code</th>
               <th className="px-4 py-2">Address</th>
               <th className="px-4 py-2">Actions</th>
@@ -161,6 +152,7 @@ const UserManagement: React.FC = () => {
       ) : (
         <p>No users found.</p>
       )}
+      </div>
     </div>
   );
 };

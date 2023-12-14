@@ -1,10 +1,13 @@
 import Axios from "axios";
 import { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
+import { useHistory } from "react-router-dom";
 
 
 const CartProduct = (props: any) => {
     const productId = props.item;
+    const hideDel = props.hideDel;
+    const history = useHistory()
 
     const [cookies, setCookie, removeCookie] = useCookies([`userId`]);
     const [productData, setProductData] = useState<any>()
@@ -17,10 +20,11 @@ const CartProduct = (props: any) => {
                 setProductData(data.data[0]); 
             })
         } else {
+            if(props.addToSum){
             if(!updated){
              props.addToSum(productData.product_price)
              setUpdated(true)
-            }
+            }}
         }
 
     }, [productData, productId, props])
@@ -45,9 +49,9 @@ const CartProduct = (props: any) => {
 
     let style = { backgroundImage: `url(http://localhost:8000/${productId}_0.jpg)` }
     return(
-    <div className="w-full h-20  rounded-xl flex overflow-hidden items-center justify-between my-2 px-2 bg-zinc-100">
+    <div onClick={() => {history.push(`/products/${productId}`)}} className={`w-full h-20  rounded-xl flex overflow-hidden items-center justify-between my-2 px-2 bg-zinc-100 ${props.styl} cursor-pointer`}>
         
-        <div style={style} className="h-16 w-16 bg-cover bg-center rounded-full"></div>
+        <div style={style} className="h-16 w-16 bg-cover bg-center rounded-full p-4"></div>
         <div className="w-4/5 pl-6">
             <h1 className="text-black">{productData?.product_name}</h1>
             
@@ -55,7 +59,9 @@ const CartProduct = (props: any) => {
         
         <div className="flex flex-col items-center w-16">
             <h1 className="text-xl">{productData?.product_price.toFixed(2)}zł</h1>
-            <button className="bg-red-600 text-red w-fit px-1 rounded" onClick={() => deleteFromCart(productId)}>Del</button>
+            {hideDel ? null : <button className="bg-red-600 text-red w-fit px-1 rounded" onClick={() => deleteFromCart(productId)}>Del</button>
+
+            }
         </div>
     </div>
     )

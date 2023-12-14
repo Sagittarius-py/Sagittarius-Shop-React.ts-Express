@@ -34,7 +34,7 @@ function App() {
             <Summary/>
           </Route>
 
-          <Route path="/payment">
+          <Route path="/payment/:orderId">
             <Payment/>
           </Route>
       </Router>

@@ -27,19 +27,19 @@ const AdminNavbar: React.FC = () => {
 
 const Admin = () => {
     return(
-        <>
+        <div className=''>
           <AdminNavbar />
             <div className='flex'>
               <div id="leftPanel" className='w-1/5 h-screen bg-slate-600 p-2'>
                 <AddProductPage/> 
               </div>
 
-              <div id="rightPanel" className='w-4/5 h-screen p-2 flex flex-col bg-slate-500 space-y-4'>
+              <div id="rightPanel" className='w-4/5 h-screen p-2 pr-12 flex flex-col bg-slate-500 space-y-4'>
                 <OrderBrowse />
                 <UserManagement />
               </div>
           </div>
-        </>
+        </div>
     )
 }
 
