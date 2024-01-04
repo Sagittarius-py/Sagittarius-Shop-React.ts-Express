@@ -4,7 +4,6 @@ import Axios from "axios";
 
 const AddProductPage: React.FC = () => {
   const [productName, setProductName] = useState('');
-  const [quantity, setQuantity] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('');
@@ -15,7 +14,6 @@ const AddProductPage: React.FC = () => {
 
     const data = new FormData();
     data.append("product_name", productName);
-    data.append("product_quantity", quantity);
     if(imageFile)
     {
     data.append("product_photos", imageFile);
@@ -29,7 +27,6 @@ const AddProductPage: React.FC = () => {
 
     // Clear form fields
     setProductName('');
-    setQuantity('');
     setImageFile(null);
     setPrice('');
     setCategory('');
@@ -55,19 +52,6 @@ const AddProductPage: React.FC = () => {
           />
         </div>
 
-        <div className="mb-4">
-          <label htmlFor="quantity" className="block font-medium mb-2">
-            Quantity
-          </label>
-          <input
-            type="number"
-            id="quantity"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-            required
-          />
-        </div>
 
         <div className="mb-4">
           <label htmlFor="imageFile" className="block font-medium mb-2">

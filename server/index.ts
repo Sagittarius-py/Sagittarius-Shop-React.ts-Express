@@ -72,7 +72,6 @@ interface IProduct extends Document {
   product_name: string;
   product_category: string;
   product_price: number;
-  product_stock: number;
   product_reviews: IProductReview[];
   product_description: string;
 }
@@ -87,10 +86,6 @@ product_name: {
     required: true,
   },
   product_price: {
-    type: Number,
-    required: true,
-  },
-  product_stock: {
     type: Number,
     required: true,
   },
@@ -375,7 +370,6 @@ app.post("/api/addProduct", upload.single("product_photos"), (req:any, res:any) 
       "product_name": product_name, 
       "product_category": product_category,
       "product_price": product_price,
-      "product_stock": product_quantity,
       "product_reviews": [],
       "product_description":product_description
     }
@@ -431,10 +425,15 @@ app.get("/api/getOneCity/:postalCode", async (req:any, res:any) => {
 const OrderSchema = new mongoose.Schema({
   order_userId: mongoose.Schema.Types.ObjectId,
   order_products: [mongoose.Schema.Types.ObjectId],
-  order_address: String,
-  order_postalCode: String,
-  order_sumPrice: Number,
+  order_shippingName: String,
+  order_shippingSurname: String,
+  order_Address: String,
+  order_PostalCode: String,
+  order_City: String,
+  order_Country: String,
+  order_PhoneNumber: String,
   order_date: String,
+  order_finished: Boolean,
 });
 
 const order = mongoose.model('Order', OrderSchema);
@@ -449,10 +448,15 @@ app.post("/api/addOrder/", async (req: any, res:any) => {
   var newOrder = {
     "order_userId": userId, 
     "order_products": products,
-    "order_address": address,
-    "order_postalCode": postalCode,
-    "order_sumPrice": finalPrice,
+    "order_shippingName": '',
+    "order_shippingSurname": '',
+    "order_Address": '',
+    "order_PostalCode": '',
+    "order_City": '',
+    "order_Country": '',
+    "order_PhoneNumber": '',
     "order_date": new Date().toUTCString().slice(0, 25),
+    "order_finished": false,
   }
 
   order.create(newOrder).then(insertedOrder => {
