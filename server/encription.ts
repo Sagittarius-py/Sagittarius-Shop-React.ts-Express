@@ -6,7 +6,7 @@ const algorithm = 'aes-256-cbc';
 const encription = () => {
   const secret = 'shezhuansauce';
   var data = fs.readFileSync('./config/test.json', 'utf8', (err, data) => {
-    console.log(data)
+
       if (err) {
         console.error(err);
         return;
@@ -21,7 +21,7 @@ const encription = () => {
         const jsonToWrite = {"key": key,
         "iv": iv}
 
-        console.log("tutaj też", key, iv)
+
         return jsonToWrite;
     } else {
         let key = crypto.createHash('sha256').update(String(secret)).digest('base64').substr(0, 32);

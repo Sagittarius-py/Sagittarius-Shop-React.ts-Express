@@ -4,16 +4,10 @@ import { useCookies } from 'react-cookie';
 import CartProduct from "./CartProduct";
 import { useHistory  } from "react-router-dom";
 
-interface ShippingOption {
-  id: number;
-  name: string;
-  price: number;
-}
 
 interface OrderSummary {
   userId: any,
   products: string[],
-  sumPrice: number
 }
 
 const Summary = () => {
@@ -25,12 +19,12 @@ const Summary = () => {
   let [orderSummary, setOrderSummary] = useState<OrderSummary>({
     "userId": "",
     "products": [],
-    "sumPrice": 0,
   })
 
 
   useEffect(() => {
     getUserInfo();
+
   }, [])
 
   const getUserInfo = async () => {
@@ -46,8 +40,16 @@ const Summary = () => {
 
 
   const proceedPayment = async () => {
-      await Axios.post(`http://localhost:8000/api/addOrder/`, orderSummary).then(data =>{
+      const dataToSend = {
+        "userId": cookies.userId,
+        "products": userData.shopping_bag,
+      }
+
+
+      await Axios.post(`http://localhost:8000/api/addOrder/`, dataToSend).then(data =>{
+        
         history.push(`/payment/${data.data}`);
+        window.location.reload();
       })
   }
 

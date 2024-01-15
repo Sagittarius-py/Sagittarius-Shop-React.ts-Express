@@ -38,7 +38,7 @@ app.on('listening', function () {
 mongoose
   .connect("mongodb+srv://admin:admin@cluster0.6hwms.mongodb.net/products")
   .then(() => {
-    console.log("connected!");
+
   });
 
 const db = mongoose.connection;
@@ -112,6 +112,7 @@ const product = mongoose.model<IProduct>("Product", productSchema);
 app.get("/api/get", async (req, res) => {
   try {
     const result = await product.find();
+
     res.send(result);
   } catch (err) {
     console.log(err);
@@ -216,6 +217,7 @@ const User = mongoose.model<any>("User", {
   shopping_bag: Array,
   address: String,
   postalCode: String,
+  admin: Boolean,
 });
 
 
@@ -234,6 +236,9 @@ app.post("/api/login", async (req: any, res: any) => {
       req.session.user = { id: user._id, email: email};
       res.cookie('userId', user._id); 
       res.cookie('email', email);
+      if(user.admin){
+        res.cookie('admin', true)
+      }
       res.status(200).send('Login successful');
     }
   } catch (error) {
@@ -244,8 +249,7 @@ app.post("/api/login", async (req: any, res: any) => {
 
 app.post("/api/register", async (req: any, res: any) => {
   const { email, password, address, postalCode } = req.body;
-  console.log(req.body)
-  console.log(email, password, address, postalCode);
+
 
   try {
     const user = await User.findOne({ "email": email });
@@ -257,8 +261,9 @@ app.post("/api/register", async (req: any, res: any) => {
         "shopping_bag": [],
         "address": address,
         "postalCode": postalCode,
+        "admin": false,
       }
-      console.log("tu się sypie")
+
       User.create(newUser)
       res.status(200).send("User created!")
     }
@@ -276,6 +281,7 @@ app.get("/api/logout", (req, res) => {
     res.clearCookie('connect.sid')
     res.clearCookie('email')
     res.clearCookie('userId')
+    res.clearCookie('admin')
     res.status(200).send("Logged out successfully!")
   });
 });
@@ -434,6 +440,8 @@ const OrderSchema = new mongoose.Schema({
   order_PhoneNumber: String,
   order_date: String,
   order_finished: Boolean,
+  order_sumPrice: Number,
+  order_shipment: String,
 });
 
 const order = mongoose.model('Order', OrderSchema);
@@ -441,9 +449,7 @@ const order = mongoose.model('Order', OrderSchema);
 // Submit order to database
 app.post("/api/addOrder/", async (req: any, res:any) => {
   let i = 0;
-  const {userId, products, address, postalCode, shippingPrice, sumPrice} = req.body;
-  var finalPrice = shippingPrice + sumPrice;
-  finalPrice = finalPrice.toFixed(2);
+  const {userId, products} = req.body;
 
   var newOrder = {
     "order_userId": userId, 
@@ -457,10 +463,49 @@ app.post("/api/addOrder/", async (req: any, res:any) => {
     "order_PhoneNumber": '',
     "order_date": new Date().toUTCString().slice(0, 25),
     "order_finished": false,
+    "order_sumPrice": 0,
+    "order_shipment": "",
   }
 
-  order.create(newOrder).then(insertedOrder => {
+  order.create(newOrder).then(async (insertedOrder) => {
+    console.log(insertedOrder.order_userId)
+    await User.updateOne({ _id: insertedOrder.order_userId}, {
+      "shopping_bag": []
+    })
     return res.send(insertedOrder._id)
+  })
+})
+
+app.post("/api/updateOrder/:orderId", async (req: any, res:any) => {
+  const orderId =  req.params.orderId;
+  (req.body)
+  const {
+    shippingName, 
+    shippingSurname, 
+    address, postalCode, 
+    city, 
+    country, 
+    phoneNumber, 
+    sumPrice, 
+    shipmentId} = req.body;
+
+
+
+  let updatedOrder = await order.updateOne({ _id: orderId}, {
+    "order_shippingName": shippingName,
+    "order_shippingSurname": shippingSurname,
+    "order_Address": address,
+    "order_PostalCode": postalCode,
+    "order_City": city,
+    "order_Country": country,
+    "order_PhoneNumber": phoneNumber,
+    "order_finished": true,
+    "order_sumPrice": sumPrice,
+    "order_shipment": shipmentId,
+
+  }).then(() => {
+    
+    return res.send(updatedOrder);
   })
 })
 
@@ -491,6 +536,21 @@ app.get("/api/getAllOrders", async (req: any, res: any) => {
     }
 
 })
+
+  app.get("/api/getUserOrders/:userId", async (req: any, res: any) =>{
+    const userId =  req.params.userId;
+    try{
+      if(userId) {
+        const wynik = await order.find({order_userId: userId})
+        res.send(wynik)
+      }
+    
+    } catch (err) {
+      console.log(err);
+      res.status(501).send("Internal server error");
+    }
+  })
+  
 
 
 // !Server ==========================================

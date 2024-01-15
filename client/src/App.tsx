@@ -8,17 +8,22 @@ import {Admin} from "./components/pages_admin/Admin"
 import Summary from './components/order_pages/Summary';
 import { WindowSizeProvider, useWindowSize } from './WindowSizeProvider';
 import Payment  from "./components/order_pages/Payment";
+import { useCookies } from 'react-cookie';
 
 
 function App() {
+  const [cookies, setCookie, removeCookie] = useCookies([`admin`]);
+
   return (
     <div  className='bg-zinc-900 min-h-screen'>
       <WindowSizeProvider>
       <NavBar />
       <Router>
+        {cookies.admin ? 
           <Route path="/admin" exact>
             <Admin/>
-          </Route>
+          </Route> : null }
+          
 
           
 

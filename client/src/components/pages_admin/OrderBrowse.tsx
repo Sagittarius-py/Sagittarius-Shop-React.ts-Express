@@ -22,9 +22,9 @@ const OrderBrowse: React.FC = () => {
           <table className="table-auto w-full">
           <thead>
             <tr>
-              <th className="px-4 py-2">User ID</th>
-              <th className="px-4 py-2">Email</th>
-              <th className="px-4 py-2">Postal Code</th>
+              <th className="px-4 py-2">Order Id</th>
+              <th className="px-4 py-2">User Id</th>
+              <th className="px-4 py-2">Products</th>
               <th className="px-4 py-2">Address</th>
               <th className="px-4 py-2">Postal code</th>
             </tr>
@@ -34,13 +34,13 @@ const OrderBrowse: React.FC = () => {
             
               orders.map((order: any) => {
                 return (
-                  <tr key={order._id} id={order._id}>
+                  <tr key={order._id} id={order._id} className={`${order.order_finished ? "bg-green-500" : "bg-red-300"}`}>
                     <>
                     <td className="mb-2 border px-4 py-2">{order._id}</td>
                     <td key={order.order_userId} className="mb-2 border px-4 py-2">{order.order_userId}</td>
-                    <td key={order.order_products} className="mb-2 border px-4 py-2 no-wrap">
+                    <td key={order.order_products} className="mb-2 border px-2 py-2 no-wrap">
                       
-                    <select className='border'>
+                    <select className=''>
                     <option value="">{}</option>
                       {
                         order.order_products.map((product: any) => (
@@ -48,11 +48,10 @@ const OrderBrowse: React.FC = () => {
                         ))
                       }
                     </select>
-                    <button className='ml-4 px-1 border'>Check</button>
                     
                     </td>
-                    <td key={order.order_address} className="mb-2 border px-4 py-2">{order.order_address}</td>
-                    <td key={order.order_postalCode} className="mb-2 border px-4 py-2">{order.order_postalCode}</td>
+                    <td key={order.order_Address} className="mb-2 border px-4 py-2">{order.order_Address}</td>
+                    <td key={order.order_PostalCode} className="mb-2 border px-4 py-2">{order.order_PostalCode}</td>
                     </>
                   </tr>
               )})

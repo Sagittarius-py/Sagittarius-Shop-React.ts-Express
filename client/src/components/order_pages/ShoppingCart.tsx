@@ -23,9 +23,10 @@ const ShoppingCart = () => {
         <>
         <div className="z-40 flex items-center justify-center  right-4 ">
             <div className='bg-slate-100 w-10 h-10 rounded-full z-50 flex items-center justify-center' onClick={() => setCartOpened(!cartOpened)}>
-               {cartOpened ?  <XMarkIcon className=" w-6" /> : <ShoppingBagIcon className=" w-6" />   } 
+                {/* {cartItems?.length > 0 ? <div className='w-4 h-4 bg-red-500 absolute right-2 top-2 rounded-full flex justify-center items-center'>{cartItems?.length}</div> : null} */}
+                {cartOpened ?  <XMarkIcon className=" w-6" /> : <ShoppingBagIcon className=" w-6" />   } 
             </div>
-            <div className={`px-4 fixed flex flex-col items-center bottom-0 right-0 z-40 h-screen bg-zinc-950 ${cartOpened ? "w-96" :" w-0 px-0 -mr-8"} duration-200 shadow-xl shadow-orange-500/30 pt-20`}>
+            <div className={`px-4 fixed flex flex-col items-center bottom-0 right-0 z-40 h-screen bg-zinc-950 ${cartOpened ? "" :" -mr-96"} w-96 duration-700 shadow-xl shadow-orange-500/30 pt-20 ease-out`}>
                 {cartOpened ? cartItems?.map((item:any, key:any) => { return <CartProduct item={item} addToSum={setSumPrice} sum={sumPrice} key={key}/>}) : null}
                 
                 <a className="absolute bottom-4 left-4 bg-orange-500 px-4 py-2 rounded-sm hover:scale-110 duration-75" href="/summary">Proceed</a>

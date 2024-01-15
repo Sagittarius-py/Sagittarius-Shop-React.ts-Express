@@ -4,12 +4,11 @@ import Axios from 'axios';
 
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
-  const [newUserName, setNewUserName] = useState('');
   const [cities, setCities] = useState<any>();
   const [userInEdit, setUserInEdit] = useState('');
-  const [userDataInEdit, setUserDataInEdit] = useState({email: "", postalCode: "", address: ""})
+  const [userDataInEdit, setUserDataInEdit] = useState({email: "", postalCode: "", address: "", admin: ""})
 
-  const [userData, setUserData] = useState({email: "", postalCode: "", address: ""})
+  const [userData, setUserData] = useState({email: "", postalCode: "", address: "", admin: ""})
 
   useEffect(() => {
     Axios.get("http://localhost:8000/api/getAllUsers").then(data => setUsers(data.data))
@@ -29,7 +28,6 @@ const UserManagement: React.FC = () => {
     if (response.ok) {
       const jsonResponse = await response.json()
       setCities(jsonResponse);
-      console.log(cities)
     }
   }
 
@@ -57,7 +55,7 @@ const UserManagement: React.FC = () => {
   
   const handleEditUser =  (user: any) => {
     setUserInEdit(user._id)
-    return setUserDataInEdit({email: user.email,  postalCode: user.postalCode, address: user.address});
+    return setUserDataInEdit({email: user.email,  postalCode: user.postalCode, address: user.address, admin: user.admin});
   }
 
   const handleSubmitEditedUser = async (userId: any) => {
@@ -75,10 +73,11 @@ const UserManagement: React.FC = () => {
         <table className="table-auto w-full">
           <thead>
             <tr>
-              <th className="px-4 py-2">Order Id</th>
-              <th className="px-4 py-2">User</th>
+              <th className="px-4 py-2">User Id</th>
+              <th className="px-4 py-2">Email</th>
               <th className="px-4 py-2">Postal Code</th>
               <th className="px-4 py-2">Address</th>
+              <th className="px-4 py-2">Admin</th>
               <th className="px-4 py-2">Actions</th>
             </tr>
           </thead>
@@ -103,7 +102,7 @@ const UserManagement: React.FC = () => {
 
                 </td>
                 <td className="border px-4 py-2"><input type="text" defaultValue={user.address}  onChange={(e) => {return setUserDataInEdit({...userDataInEdit, address: e.target.value})}}/></td>
-                
+                <td className="border px-4 py-2"><input type="text" defaultValue={user.admin}  onChange={(e) => {return setUserDataInEdit({...userDataInEdit, admin: e.target.value})}}/></td>
                 <td className="border px-4 py-2">
                   <button
                     className="text-red-500 hover:text-red-600 mr-2"
@@ -126,7 +125,7 @@ const UserManagement: React.FC = () => {
                 <td className="border px-4 py-2">{user.email}</td>
                 <td className="border px-4 py-2">{user.postalCode}</td>
                 <td className="border px-4 py-2">{user.address}</td>
-                
+                <td className="border px-4 py-2">{user.admin.toString()}</td>
                 <td className="border px-4 py-2">
                   <button
                     className="text-red-500 hover:text-red-600 mr-2"

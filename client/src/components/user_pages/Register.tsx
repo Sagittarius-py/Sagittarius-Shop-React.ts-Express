@@ -43,7 +43,7 @@ const Register = () => {
       if (response.ok) {
         const jsonResponse = await response.json()
         setCities(jsonResponse);
-        console.log(cities)
+
       }
     }
     
