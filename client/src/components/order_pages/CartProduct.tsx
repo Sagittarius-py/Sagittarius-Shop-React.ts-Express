@@ -57,9 +57,9 @@ const CartProduct = (props: any) => {
         
         <div className="flex flex-col items-center w-16">
             <h1 className="text-xl">{productData?.product_price.toFixed(2)}zł</h1>
-            {hideDel ? null : <button className="bg-red-600 text-red w-fit px-1 rounded z-50" onClick={() => deleteFromCart(productId)}>Del</button>
+            {/* {hideDel ? null : <button className="bg-red-600 text-red w-fit px-1 rounded z-50" onClick={() => deleteFromCart(productId)}>Del</button>
 
-            }
+            } */}
         </div>
     </div>
     )

@@ -15,9 +15,7 @@ const Login = () => {
           body: JSON.stringify({ email, password })
         });
         if (response.status === 200) {
-
-          const win: Window = window;
-          win.location = '/';
+          window.location.reload();
         } else if(response.status === 201) {
           alert("User with this login cannot be found in our database. Please try other logn or register.")
         } else if(response.status === 202) {

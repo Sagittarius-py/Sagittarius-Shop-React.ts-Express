@@ -31,6 +31,7 @@ const AddProductPage: React.FC = () => {
     setPrice('');
     setCategory('');
     setDescription('');
+    window.location.reload();
   };
 
   return (

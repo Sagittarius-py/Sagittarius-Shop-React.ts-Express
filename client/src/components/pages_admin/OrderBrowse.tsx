@@ -23,7 +23,7 @@ const OrderBrowse: React.FC = () => {
           <thead>
             <tr>
               <th className="px-4 py-2">Order Id</th>
-              <th className="px-4 py-2">User Id</th>
+              <th className="px-4 py-2">User</th>
               <th className="px-4 py-2">Products</th>
               <th className="px-4 py-2">Address</th>
               <th className="px-4 py-2">Postal code</th>
@@ -37,7 +37,7 @@ const OrderBrowse: React.FC = () => {
                   <tr key={order._id} id={order._id} className={`${order.order_finished ? "bg-green-500" : "bg-red-300"}`}>
                     <>
                     <td className="mb-2 border px-4 py-2">{order._id}</td>
-                    <td key={order.order_userId} className="mb-2 border px-4 py-2">{order.order_userId}</td>
+                    <td key={order.order_userId} className="mb-2 border px-4 py-2">{order.order_shippingName} {order.order_shippingSurname}</td>
                     <td key={order.order_products} className="mb-2 border px-2 py-2 no-wrap">
                       
                     <select className=''>
