@@ -114,11 +114,10 @@ const Payment = () => {
         }
 
 
-        if(user_name !== "" && user_surname !== "" && address !== "" && postalCode !== "" && city !== "" && country !== "" && phoneNumber !== ""){
             await Axios.post(`http://localhost:8000/api/updateOrder/${orderId}`, data).then((wynik:any) => {
                 setOrder(wynik)
             })
-        }
+        
 
 
         

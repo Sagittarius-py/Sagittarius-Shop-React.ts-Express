@@ -132,6 +132,19 @@ app.get("/api/getOneProduct/:productID", async (req, res) => {
   }
 });
 
+app.delete("/api/deleteProduct/:id", async (req, res) => {
+  const id =  req.params.id
+  try {
+    const result = await product.deleteOne({_id: id});
+    res.send(result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Internal server error");
+  }
+
+})
+
+
 
 app.post("/api/AddProductToBag", async (req, res) => {
   const {productID, userId} = req.body;

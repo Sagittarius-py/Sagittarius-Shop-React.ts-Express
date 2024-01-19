@@ -42,9 +42,9 @@ const ProductManagement: React.FC = () => {
   };
 
   const handleDelete = (id: string) => {
-    // axios.delete(`/api/products/${id}`).then(() => {
-    //   setProducts(products.filter((product) => product._id !== id));
-    // });
+    axios.delete(`http://localhost:8000/api/deleteProduct/${id}`).then(() => {
+      setProducts(products.filter((product) => product._id !== id));
+    }).then(() => {window.location.reload()});
   };
 
   return (
