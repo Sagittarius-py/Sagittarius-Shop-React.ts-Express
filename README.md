@@ -26,7 +26,7 @@ This is a full-stack web application for a jewelry webshop built using React wit
 
 ## Getting Started
 
-1. **Clone the repository**: `git clone https://github.com/your-username/jewelry-webshop.git`
+1. **Clone the repository**: `git clone https://github.com/Sagittarius-py/Sagittarius-Shop-React.ts-Express.git`
 2. **Install dependencies**:
     - Frontend: `cd client && npm install`
     - Backend: `cd server && npm install`
